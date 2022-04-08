@@ -5,6 +5,7 @@ vid = cv2.VideoCapture(1)
 drawing = mp.solutions.drawing_utils
 hands = mp.solutions.hands.Hands()
 
+#reference: google mediaPipe docs
 while True:
     status, image = vid.read()
     image = cv2.flip(image,1)
@@ -13,6 +14,7 @@ while True:
         for landmark in results.multi_hand_landmarks:
             for num,pos in enumerate(landmark.landmark):
                 y,x,colour = image.shape
+                # !!!won't run without int!!! keep it
                 cx = int(pos.x * x)
                 cy = int(pos.y*y)
                 cv2.circle(image, (cx, cy), 15, (0, 255, 0), cv2.FILLED)
