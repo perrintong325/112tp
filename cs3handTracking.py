@@ -29,7 +29,7 @@ def redrawAll(app):
                     # cv2.circle(rgbImage, (cx, cy), 15, (0, 255, 0), cv2.FILLED)
                     drawCircle(cx,cy,15,fill='green')
         else:
-            drawPILImage(Image.fromarray(app.frame), 0, 0)
+            drawPILImage(Image.fromarray(image), 0, 0)
                 
         
 
