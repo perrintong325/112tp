@@ -1,7 +1,15 @@
 import cv2 
 import mediapipe as mp
 
-vid = cv2.VideoCapture(1)
+camNum = -1
+for cam in range (2):
+    vid = cv2.VideoCapture(cam)
+    if vid.isOpened():
+        camNum = cam
+if camNum == -1:
+    print("No camera detected")
+    quit()
+vid = cv2.VideoCapture(camNum)
 drawing = mp.solutions.drawing_utils
 hands = mp.solutions.hands.Hands()
 

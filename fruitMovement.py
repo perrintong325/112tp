@@ -11,8 +11,10 @@ class Fruit(object):
         self.name = name
         self.cx = random.randrange(0, x)
         self.cy = y
-        self.xVelocity = random.randrange(-20, 10)
-        self.yVelocity = random.randint(-y//30, -y//50)
+        self.xVelocity = random.randrange(-15, 15)
+        self.yVelocity = random.randint(-y//30, -y//45)
+        self.xAcceleration = 1
+        self.yAcceleration = 1
         # self.r = random.randrange(5,15)
         # self.r = 20
         self.intersect = set()
@@ -21,6 +23,7 @@ class Fruit(object):
         self.entryPoint = None
         self.exitPoint = None
         self.cords = set()
+        
     
 class Apple(Fruit):
     def __init__(self, name):
@@ -58,7 +61,7 @@ def onAppStart(app):
     app.handY = -1
     app.movement = []
     app.moveCount = 0
-    # app.stepsPerSecond = 3
+    #app.stepsPerSecond = 120
     app.boids = 0
 
 # reference: cs academy
@@ -114,7 +117,7 @@ def onKeyPress(app,key):
 
 def onStep(app):
     app.count += 1
-    if app.count % 10 == 0:
+    if app.count % 10 == 0 and bool(app.boids) == False:
         app.fruits.append(Apple(str(app.count)))
     if app.count % 20 == 0:
         app.bombs.append(Bomb())
@@ -123,7 +126,11 @@ def onStep(app):
         for fruit in app.fruits:
             fruit.cx += fruit.xVelocity
             fruit.cy += fruit.yVelocity
-            fruit.yVelocity += 0.5
+            if fruit.xVelocity <0:
+                fruit.xVelocity -= fruit.xAcceleration
+            else:
+                fruit.xVelocity += fruit.xAcceleration
+            fruit.yVelocity += fruit.yAcceleration
             fruit.intersect = set()
             fruit.entryPoint = None
             fruit.exitPoint = None
