@@ -117,7 +117,7 @@ def onKeyPress(app,key):
 
 def onStep(app):
     app.count += 1
-    if app.count % 10 == 0 and bool(app.boids) == False:
+    if app.count % 10 == 0:
         app.fruits.append(Apple(str(app.count)))
     if app.count % 20 == 0:
         app.bombs.append(Bomb())
