@@ -1,16 +1,14 @@
 import math
 # from fruitMovement import distance
 
-#reference: stanford cs notes and vergnet boids seudocode
-maxSpeed = 20
-minSpeed = 10
+#reference: stanford cs notes, cornell ece notes and vergnet boids seudocode
+maxSpeed = 40
+minSpeed = 5
 def boids(fruits,x,y):
     cohesion(fruits)
     seperation(fruits)
     alignment(fruits)
     for fruit in fruits:
-        # fruit.xVelocity += fruit.xAcceleration
-        # fruit.yVelocity += fruit.yAcceleration
         speed = math.sqrt(fruit.xVelocity**2 + fruit.yVelocity**2)
         if speed > maxSpeed:
             fruit.xVelocity *= maxSpeed/speed
@@ -31,30 +29,14 @@ def distance(x1, y1, x2, y2):
     return ((x1-x2)**2 + (y1-y2)**2)**0.5
 
 def cohesion(fruits):
-    # cx = 0
-    # cy = 0
-    # for fruit in fruits:
-    #     cx += fruit.cx
-    #     cy += fruit.cy
-    # cx /= len(fruits)
-    # cy /= len(fruits)
-    # for fruit in fruits:
-    #     # fruit.perceivedCx = (cx-fruit.cx)/(len(fruits)-1)
-    #     # fruit.perceivedCy = (cy-fruit.cy)/(len(fruits)-1)
-    #     # fruit.cx += (fruit.perceivedCx - fruit.cx)/50
-    #     # fruit.cy += (fruit.perceivedCy - fruit.cy)/50
-    #     steerX = cx - fruit.cx - fruit.xVelocity
-    #     steerY = cy - fruit.cy - fruit.yVelocity
-    #     fruit.xAcceleration += steerX
-    #     fruit.yAcceleration += steerY
-    centeringFactor = 0.05
+    centeringFactor = 0.005
     for fruitA in fruits:
         cx = 0
         cy = 0
         neighborCount = 0
         for fruitB in fruits:
             if fruitA != fruitB:
-                if distance(fruitA.cx, fruitA.cy, fruitB.cx, fruitB.cy) < fruitA.r+fruitB.r + 40:
+                if distance(fruitA.cx, fruitA.cy, fruitB.cx, fruitB.cy) < fruitA.r+fruitB.r+50:
                     cx += fruitB.cx
                     cy += fruitB.cy
                     neighborCount += 1
@@ -66,36 +48,20 @@ def cohesion(fruits):
 
 
 def seperation(fruits):
-    avoidfactor = 5
+    avoidfactor = 0.5
     for fruitA in fruits:
         disX = 0
         disY = 0
         for fruitB in fruits:
             if fruitA != fruitB:
-                if distance(fruitA.cx, fruitA.cy, fruitB.cx, fruitB.cy) < fruitA.r+fruitB.r + 20:
+                if distance(fruitA.cx, fruitA.cy, fruitB.cx, fruitB.cy) < fruitA.r+fruitB.r+5:
                     disX += fruitA.cx - fruitB.cx
                     disY += fruitA.cy - fruitB.cy
         fruitA.xVelocity += disX*avoidfactor
         fruitA.yVelocity += disY*avoidfactor
 
 def alignment(fruits):
-    # vx = 0
-    # vy = 0
-    # for fruit in fruits:
-    #     vx += fruit.xVelocity
-    #     vy += fruit.yVelocity
-    # vx /= len(fruits)
-    # vy /= len(fruits)
-    # for fruit in fruits:
-    #     # fruit.perceivedVx = (vx-fruit.xVelocity)/(len(fruits)-1)
-    #     # fruit.perceivedVy = (vy-fruit.yVelocity)/(len(fruits)-1)
-    #     # fruit.xVelocity += (fruit.perceivedVx - fruit.xVelocity)/20
-    #     # fruit.yVelocity += (fruit.perceivedVy - fruit.yVelocity)/20
-    #     steerX = vx - fruit.xVelocity
-    #     steerY = vy - fruit.yVelocity
-    #     fruit.xAcceleration += steerX
-    #     fruit.yAcceleration += steerY
-    matchingFactor = 5
+    matchingFactor = 1.3
     for fruitA in fruits:
         vx = 0
         vy = 0
@@ -112,13 +78,13 @@ def alignment(fruits):
             fruitA.yVelocity += vy * matchingFactor
 
 def bound(fruits,x,y):
-    turnFactor = 5
+    turnFactor = 8.5
     for fruit in fruits:
-        if fruit.cx <= 50:
+        if fruit.cx <= 400:
             fruit.xVelocity += turnFactor
-        elif x-50 <= fruit.cx:
+        elif x-400 <= fruit.cx:
             fruit.xVelocity -= turnFactor
-        if fruit.cy <= 15:
+        if fruit.cy <= 400:
             fruit.yVelocity += turnFactor
-        elif y-15 <= fruit.cy:
+        elif y-400 <= fruit.cy:
             fruit.yVelocity -= turnFactor
