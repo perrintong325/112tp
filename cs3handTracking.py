@@ -72,12 +72,16 @@ class Bomb(object):
     def __init__(self,app):
         self.cx = random.choice([0, app.width])
         self.cy = random.randrange(0, app.height)
+        # self.cy = 1080
         self.xVelocity = app.width/20
         self.yVelocity = -5
+        self.xAcceleration = 0
+        self.yAcceleration = 9.8
         self.r = 10
         self.color = 'red'
 
-def pathFinding(x0,y0,xMax,yMax,xVelocity):
+def pathFinding(x0,y0,xMax,yMax,xVelocity,xAcceleration,yAcceleration):
+# def pathFinding(x0,xMax,xVelocity,xAcceleration,yAcceleration):
     # if y0<=yMax:
     #     return 500
     # else:
@@ -86,13 +90,19 @@ def pathFinding(x0,y0,xMax,yMax,xVelocity):
     #     # return (math.sqrt((velocity**2)-(xVelocity**2)))
     #     print('test')
     #     return (yMax-y0)*((xMax-x0)/xVelocity)
-    yV = (yMax-y0)*((xMax-x0)/xVelocity)
-    return (yMax-y0)/((xMax-x0)/xVelocity)
+    t = (xMax-x0)/xVelocity
+    if y0<=yMax:
+        return ((yMax-y0)/t)-(0.5*yAcceleration*t)
+    else:
+        return ((yMax-y0)-(0.5*yAcceleration*(t**2)))/t
+
 
 class SmartBomb(Bomb):
     def __init__(self,app,targetX,targetY):
         super().__init__(app)
-        self.yVelocity = pathFinding(self.cx,self.cy,targetX,targetY,self.xVelocity)
+        # self.yVelocity = pathFinding(self.cx,self.cy,targetX,targetY,self.xVelocity)
+        self.yVelocity = pathFinding(self.cx,self.cy,targetX,targetY,self.xVelocity,self.xAcceleration,self.yAcceleration)
+        #self.yVelocity = pathFinding(self.cx,self.cy,app.width/2,app.height/2,self.xVelocity,self.xAcceleration,self.yAcceleration)
 
 def onAppStart(app):
     app.vid = vid
@@ -106,17 +116,9 @@ def onAppStart(app):
 def redrawAll(app):
     if app.hasFrame:
         image = cv2.flip(cv2.cvtColor(app.frame, cv2.COLOR_BGR2RGB), 1)
-        # if app.handMode == 1:
-        #     image = app.handDetector.findHands(image)
-        #     drawPILImage(Image.fromarray(image), 0, 0)
-        #     # cv2.imshow("image",image)
-        #     app.handDetector.drawDots(image)
-        # else:
-        #     image = app.headDetector.findHeads(image)
-        #     drawPILImage(Image.fromarray(image), 0, 0)
         image = app.handDetector.findHands(image)
         image = app.headDetector.findHeads(image,app)
-        drawPILImage(Image.fromarray(image), 0, 0)
+        drawImage(CMUImage(Image.fromarray(image)), 0, 0)
         app.handDetector.drawDots(image)
     drawLabel(f"Hand Mode = {bool(app.handMode)}", 100, 100, size=30,
               fill='lawnGreen', align='left')
@@ -142,6 +144,8 @@ def onStep(app):
     for bomb in app.bombs:
         bomb.cx += bomb.xVelocity
         bomb.cy += bomb.yVelocity
+        bomb.xVelocity += bomb.xAcceleration
+        bomb.yVelocity += bomb.yAcceleration
     removeable = []
     for bomb in app.bombs:
         if bomb.cx > app.width or bomb.cx < 0:
@@ -155,6 +159,7 @@ def onStep(app):
 def main():
     _, image = vid.read()
     y, x, c = image.shape
+    print(x,y)
     runApp(width=x, height=y)
 
 
