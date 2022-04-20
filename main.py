@@ -7,6 +7,7 @@ import fruitMovement
 def onAppStart(app):
     openingScreen.openingScreenOnAppStart(app)
     fruitMovement.fruitMovementOnAppStart(app)
+    app.backButtonImage = Image.open('Resources/backButton.png')
     app.stepsPerSecond = 120
 
 def onStep(app):
@@ -30,5 +31,6 @@ def redrawAll(app):
         drawImage(CMUImage(app.backgroundImage), 0, 0)
         drawImage(CMUImage(app.logo), 0, 0,width=1.6*(app.width/6),height=app.width/6)
         fruitMovement.fruitMovementRedrawAll(app)
+    drawImage(CMUImage(app.backButtonImage), 0, app.height-250)
 
 runApp(width=1920, height=1080)

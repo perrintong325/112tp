@@ -3,10 +3,10 @@ from PIL import Image
 
 # def onAppStart(app):
 def openingScreenOnAppStart(app):
-    app.backgroundImage = Image.open('background.png')
-    app.logo = Image.open('FruitNinja.png')
-    app.normalModeImage = Image.open('normalMode.png')
-    app.handModeImage = Image.open('handMode.png')
+    app.backgroundImage = Image.open('Resources/background.png')
+    app.logo = Image.open('Resources/FruitNinja.png')
+    app.normalModeImage = Image.open('Resources/normalMode.png').convert('RGBA')
+    app.handModeImage = Image.open('Resources/handMode.png')
     app.handModeX, app.handModeY = 5*app.width//8, 3*app.height//8
     app.normalModeX, app.normalModeY = app.width//8, 3*app.height//8
     app.status = 'splashScreen'
@@ -15,8 +15,8 @@ def openingScreenOnAppStart(app):
 # def onStep(app):
 def openingScreenOnStep(app):
     if app.splashScreenLeave:
-        app.normalModeX -= 30
-        app.handModeX += 30
+        app.normalModeX -= 50
+        app.handModeX += 50
         if app.normalModeX <= 0 and app.handModeX >= app.width:
             app.status = 'normal'
             app.handModeX, app.handModeY = 5*app.width//8, 3*app.height//8

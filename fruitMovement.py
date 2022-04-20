@@ -68,7 +68,7 @@ def fruitMovementOnAppStart(app):
     app.handY = -1
     app.movement = []
     app.moveCount = 0
-    app.stepsPerSecond = 30
+    app.stepsPerSecond = 120
     app.boids = 0
 
 # reference: cs academy
