@@ -31,7 +31,7 @@ def onStep(app):
         fruitMovement.onStep(app)
     elif app.status == 'hand':
         handMode.onStep(app)
-        # fruitMovement.fruitMovementOnStep(app)
+        fruitMovement.onStep(app)
 
 def onMousePress(app,mouseX,mouseY):
     if app.status == 'splashScreen':
@@ -43,6 +43,9 @@ def onMousePress(app,mouseX,mouseY):
             app.splashScreenLeave = False
             fruitMovement.onAppStart(app)
             handMode.onAppStart(app)
+
+def onKeyPress(app, key):
+    fruitMovement.onKeyPress(app, key)
 
 def onMouseMove(app,mouseX,mouseY):
     if app.status == 'normal':

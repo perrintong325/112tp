@@ -29,13 +29,12 @@ class handDetector(object):
         if self.results.multi_hand_landmarks:
             for landmark in self.results.multi_hand_landmarks:
                 for pos in landmark.landmark:
-                    y, x, colour = image.shape
+                    y, x, _ = image.shape
                     # !!!won't run without int!!! keep it
                     cx = pos.x * x
                     cy = pos.y*y
                     app.handPoints.append((cx,cy))
-                    drawCircle(cx, cy, 15, fill='green')
-                    #cv2.circle(image, (cx, cy), 15, (0, 255, 0), cv2.FILLED)
+                    # drawCircle(cx, cy, 15, fill='green')
 
     def findHands(self, image):
         self.results = mp_hands.Hands(max_num_hands=self.maxHands,
@@ -74,7 +73,6 @@ class Bomb(object):
     def __init__(self,app):
         self.cx = random.choice([0, app.width])
         self.cy = random.randrange(0, app.height)
-        # self.cy = 1080
         self.xVelocity = app.width/20
         self.yVelocity = -5
         self.xAcceleration = 0
@@ -100,7 +98,7 @@ class SmartBomb(Bomb):
 def onAppStart(app):
     app.vid = vid
     app.hasFrame = False
-    app.stepsPerSecond = 30
+    app.stepsPerSecond = 60
     app.bombs = []
     app.noses = []
     app.handPoints = []
@@ -119,13 +117,18 @@ def redrawAll(app):
 
 
 def onStep(app):
+    for p in app.handPoints:
+        fruitMovement.onMouseMove(app,p[0],p[1])
+    if app.count % 10 == 0:
+        app.movement = []
+        app.handPoints = []
     app.handDetector = handDetector(4, 0.3, 0.3)
     app.headDetector = headDetector(0.3)
     _, app.frame = app.vid.read()
     app.hasFrame = True
-    if app.noses!=[]:
-        app.bombs.append(SmartBomb(app,app.noses[0][0],app.noses[0][1]))
-        app.noses.pop(0)
+    # if app.noses!=[]:
+    #     app.bombs.append(SmartBomb(app,app.noses[0][0],app.noses[0][1]))
+    #     app.noses.pop(0)
     for bomb in app.bombs:
         bomb.cx += bomb.xVelocity
         bomb.cy += bomb.yVelocity
@@ -142,10 +145,7 @@ def onStep(app):
 
 
 def main():
-    _, image = vid.read()
-    y, x, c = image.shape
-    print(x,y)
-    runApp(width=x, height=y)
+    runApp(width=1280, height=720)
 
 
 if __name__ == '__main__':

@@ -50,10 +50,12 @@ class slicedFruit(object):
 
 class Bomb(object):
     def __init__(self,app):
-        self.cx = random.randrange(0, app.width)
-        self.cy = app.height
-        self.xVelocity = random.randrange(-1, 1)
-        self.yVelocity = 5
+        self.cx = random.choice([0, app.width])
+        self.cy = random.randrange(0, app.height)
+        self.xVelocity = app.width/20
+        self.yVelocity = -5
+        self.xAcceleration = 0
+        self.yAcceleration = 9.8
         self.r = 10
         self.color = 'red'
         
@@ -140,9 +142,8 @@ def onMouseMove(app,mouseX,mouseY):
                 # fruit.entryPoint = cordCalc(fruit.entryCords[0], fruit.entryCords[1], fruit.cx+160, fruit.cy,fruit.r)
                 # fruit.exitPoint = cordCalc(fruit.exitCords[0], fruit.exitCords[1], fruit.cx, fruit.cy,fruit.r)
                 result = cordCalc(fruit.entryCords[0], fruit.entryCords[1], fruit.cx+160, fruit.cy+160,fruit.r)
-                fruit.entryPoint = result[0]
-                fruit.exitPoint = result[1]
-                print("point:", fruit.entryPoint, fruit.exitPoint)
+                fruit.entryPoint = result[1]
+                fruit.exitPoint = result[0]
                 fruit.angle = angleCalc(fruit.entryPoint, fruit.exitPoint)
                 newCx = (fruit.entryPoint[0] + fruit.exitPoint[0])/2
                 newCy = (fruit.entryPoint[1] + fruit.exitPoint[1])/2
@@ -198,7 +199,7 @@ def onStep(app):
             if fruit.cx > app.width or fruit.cx < 0 or fruit.cy > app.height or fruit.cy < 0:
                 app.removeable.add(fruit)
     else:
-        app.fruits = boids(app.fruits,x,y)
+        app.fruits = boids(app.fruits,app.width,app.height)
     for bomb in app.bombs:
         bomb.cx += bomb.xVelocity
         bomb.cy += bomb.yVelocity
@@ -218,9 +219,10 @@ def redrawAll(app):
         drawArc(int(fruit.cx), int(fruit.cy), int(fruit.width),int(fruit.height), fruit.angle,fruit.sweepAngle, fill='red')
     for bomb in app.bombs:
         drawCircle(bomb.cx, bomb.cy, bomb.r, fill='red')
-    for l in range(1, len(app.movement)):
-        drawLine(app.movement[l-1][0], app.movement[l-1][1],
-                app.movement[l][0], app.movement[l][1], fill='blue')
+    if app.status == 'normal':
+        for l in range(1, len(app.movement)):
+            drawLine(app.movement[l-1][0], app.movement[l-1][1],
+                    app.movement[l][0], app.movement[l][1], fill='blue')
         
 
 if __name__ == '__main__':

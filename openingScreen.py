@@ -13,8 +13,8 @@ def onAppStart(app):
 
 def onStep(app):
     if app.splashScreenLeave!=False:
-        app.normalModeX -= 50
-        app.handModeX += 50
+        app.normalModeX -= 30
+        app.handModeX += 30
         if app.normalModeX <= 0 and app.handModeX >= app.width:
             app.status = app.splashScreenLeave
             app.handModeX, app.handModeY = 5*app.width//8, 3*app.height//8
