@@ -17,48 +17,49 @@ if camNum == -1:
 vid = cv2.VideoCapture(camNum)
 
 def onAppStart(app):
-    openingScreen.openingScreenOnAppStart(app)
-    fruitMovement.fruitMovementOnAppStart(app)
-    handMode.handModeOnAppStart(app)
+    openingScreen.onAppStart(app)
+    fruitMovement.onAppStart(app)
+    handMode.onAppStart(app)
     app.backButtonImage = Image.open('Resources/backButton.png')
-    app.stepsPerSecond = 30
+    app.backButtonImage = app.backButtonImage.resize((app.width//10,app.width//10))
+    app.stepsPerSecond = 60
 
 def onStep(app):
     if app.status == 'splashScreen':
-        openingScreen.openingScreenOnStep(app)
+        openingScreen.onStep(app)
     elif app.status == 'normal':
-        fruitMovement.fruitMovementOnStep(app)
+        fruitMovement.onStep(app)
     elif app.status == 'hand':
-        handMode.handModeOnStep(app)
-        fruitMovement.fruitMovementOnStep(app)
+        handMode.onStep(app)
+        # fruitMovement.fruitMovementOnStep(app)
 
 def onMousePress(app,mouseX,mouseY):
     if app.status == 'splashScreen':
-        openingScreen.openingScreenOnMousePress(app,mouseX,mouseY)
+        openingScreen.onMousePress(app,mouseX,mouseY)
     elif app.status == 'normal' or app.status == 'hand':
         if mouseX >= 0 and mouseX <= app.backButtonImage.width and \
-        mouseY >= app.height-250 and mouseY <= app.height-250+app.backButtonImage.height:
+        mouseY >= app.height-app.backButtonImage.height-10 and mouseY <= app.height-10:
             app.status = 'splashScreen'
             app.splashScreenLeave = False
-            fruitMovement.fruitMovementOnAppStart(app)
-            handMode.handModeOnAppStart(app)
+            fruitMovement.onAppStart(app)
+            handMode.onAppStart(app)
 
 def onMouseMove(app,mouseX,mouseY):
     if app.status == 'normal':
-        fruitMovement.fruitMovementOnMouseMove(app,mouseX,mouseY)
+        fruitMovement.onMouseMove(app,mouseX,mouseY)
 
 def redrawAll(app):
     if app.status == 'splashScreen':
-        openingScreen.openingScreenRedrawAll(app)
+        openingScreen.redrawAll(app)
     elif app.status == 'normal':
         drawImage(CMUImage(app.backgroundImage), 0, 0)
-        drawImage(CMUImage(app.logo), 0, 0,width=1.6*(app.width/6),height=app.width/6)
-        fruitMovement.fruitMovementRedrawAll(app)
-        drawImage(CMUImage(app.backButtonImage), 0, app.height-250)
+        drawImage(CMUImage(app.logo), 0, 0,width=1.6*(app.width/8),height=app.width/8)
+        fruitMovement.redrawAll(app)
+        drawImage(CMUImage(app.backButtonImage), 0, app.height-app.backButtonImage.height-10)
     elif app.status == 'hand':
-        handMode.handModeRedrawAll(app)
-        drawImage(CMUImage(app.logo), 0, 0,width=1.6*(app.width/6),height=app.width/6)
-        drawImage(CMUImage(app.backButtonImage), 0, app.height-250)
-        fruitMovement.fruitMovementRedrawAll(app)
+        handMode.redrawAll(app)
+        drawImage(CMUImage(app.logo), 0, 0,width=1.6*(app.width/8),height=app.width/8)
+        drawImage(CMUImage(app.backButtonImage), 0, app.height-app.backButtonImage.height-10)
+        fruitMovement.redrawAll(app)
 
-runApp(width=1920, height=1080)
+runApp(width=1280, height=720)

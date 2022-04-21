@@ -5,16 +5,16 @@ import math
 import cmath
 import sympy
 
-x, y = 1920, 1080
+# x, y = app.width, app.height
 
 
 class Fruit(object):
-    def __init__(self, name):
+    def __init__(self, name,app):
         self.name = name
-        self.cx = random.randrange(0, x)
-        self.cy = y
+        self.cx = random.randrange(0, app.width)
+        self.cy = app.height
         self.xVelocity = random.randrange(-20, 20)
-        self.yVelocity = random.randint(-y//25, -y//35)
+        self.yVelocity = random.randint(-app.height//25, -app.height//35)
         self.xAcceleration = 1
         self.yAcceleration = 1
         # self.r = random.randrange(5,15)
@@ -28,8 +28,8 @@ class Fruit(object):
         
     
 class Apple(Fruit):
-    def __init__(self, name):
-        super().__init__(name)
+    def __init__(self, name,app):
+        super().__init__(name,app)
         self.color = 'red'
         self.r = 40
         self.draw = f'drawCircle({self.cx}, {self.cy}, {self.r}, {self.color})'
@@ -49,18 +49,17 @@ class slicedFruit(object):
 
 
 class Bomb(object):
-    def __init__(self):
-        self.cx = random.randrange(0, x)
-        self.cy = y
+    def __init__(self,app):
+        self.cx = random.randrange(0, app.width)
+        self.cy = app.height
         self.xVelocity = random.randrange(-1, 1)
         self.yVelocity = 5
         self.r = 10
         self.color = 'red'
         
 
-#def onAppStart(app):
-def fruitMovementOnAppStart(app):    
-    app.fruits = [Apple('First')]
+def onAppStart(app):  
+    app.fruits = [Apple('First',app)]
     app.slicedFruits = []
     app.bombs = []
     app.count = 0
@@ -122,8 +121,7 @@ def angleCalc(p1,p2):
 def radiusCalc(newCx, newCy, cx, cy, r):
     return r - distance(newCx, newCy, cx, cy)
 
-# def onMouseMove(app, mouseX, mouseY):
-def fruitMovementOnMouseMove(app,mouseX,mouseY):
+def onMouseMove(app,mouseX,mouseY):
     app.handX = mouseX
     app.handY = mouseY
     app.movement.append((mouseX, mouseY))
@@ -168,14 +166,13 @@ def onKeyPress(app,key):
         app.boids = abs(app.boids-1)
 
 
-# def onStep(app):
-def fruitMovementOnStep(app):
+def onStep(app):
     app.count += 1
     if app.count % 10 == 0:
-        app.fruits.append(Apple(str(app.count)))
+        app.fruits.append(Apple(str(app.count),app))
         app.movement = []
     if app.count % 20 == 0:
-        app.bombs.append(Bomb())
+        app.bombs.append(Bomb(app))
     if bool(app.boids) == False:
         for fruit in app.fruits:
             fruit.cx += fruit.xVelocity
@@ -213,8 +210,7 @@ def fruitMovementOnStep(app):
     app.removeable = set()
 
 
-# def redrawAll(app):
-def fruitMovementRedrawAll(app):
+def redrawAll(app):
     for fruit in app.fruits:
         drawCircle(fruit.cx, fruit.cy, fruit.r, fill='red')
         drawLabel(fruit.name, fruit.cx, fruit.cy)
@@ -228,4 +224,4 @@ def fruitMovementRedrawAll(app):
         
 
 if __name__ == '__main__':
-    runApp(width=x, height=y)
+    runApp(width=1280, height=720)

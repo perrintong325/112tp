@@ -4,6 +4,7 @@ import cv2
 import mediapipe as mp
 import math
 import random
+import fruitMovement
 
 mp_draw = mp.solutions.drawing_utils
 mp_hands = mp.solutions.hands
@@ -24,7 +25,7 @@ class handDetector(object):
         self.minDetectionConf = minDetectionConf
         self.minTrackConf = minTrackConf
 
-    def drawDots(self, image):
+    def drawDots(self, image,app):
         if self.results.multi_hand_landmarks:
             for landmark in self.results.multi_hand_landmarks:
                 for pos in landmark.landmark:
@@ -32,6 +33,7 @@ class handDetector(object):
                     # !!!won't run without int!!! keep it
                     cx = pos.x * x
                     cy = pos.y*y
+                    app.handPoints.append((cx,cy))
                     drawCircle(cx, cy, 15, fill='green')
                     #cv2.circle(image, (cx, cy), 15, (0, 255, 0), cv2.FILLED)
 
@@ -81,15 +83,6 @@ class Bomb(object):
         self.color = 'red'
 
 def pathFinding(x0,y0,xMax,yMax,xVelocity,xAcceleration,yAcceleration):
-# def pathFinding(x0,xMax,xVelocity,xAcceleration,yAcceleration):
-    # if y0<=yMax:
-    #     return 500
-    # else:
-    #     # theta = math.atan((y0-yMax)/(x0-xMax))
-    #     # velocity = math.sqrt((y0-yMax)*2/(math.sin(theta)**2))
-    #     # return (math.sqrt((velocity**2)-(xVelocity**2)))
-    #     print('test')
-    #     return (yMax-y0)*((xMax-x0)/xVelocity)
     t = (xMax-x0)/xVelocity
     if y0<=yMax:
         return ((yMax-y0)/t)-(0.5*yAcceleration*t)
@@ -104,32 +97,31 @@ class SmartBomb(Bomb):
         self.yVelocity = pathFinding(self.cx,self.cy,targetX,targetY,self.xVelocity,self.xAcceleration,self.yAcceleration)
         #self.yVelocity = pathFinding(self.cx,self.cy,app.width/2,app.height/2,self.xVelocity,self.xAcceleration,self.yAcceleration)
 
-#def onAppStart(app):
-def handModeOnAppStart(app):
+def onAppStart(app):
     app.vid = vid
     app.hasFrame = False
     app.stepsPerSecond = 30
     app.bombs = []
-    app.noses = list()
+    app.noses = []
+    app.handPoints = []
 
 
-#def redrawAll(app):
-def handModeRedrawAll(app):
+def redrawAll(app):
     if app.hasFrame:
         image = cv2.flip(cv2.cvtColor(app.frame, cv2.COLOR_BGR2RGB), 1)
+        image = cv2.resize(image, (app.width, app.height))
         image = app.handDetector.findHands(image)
         image = app.headDetector.findHeads(image,app)
         drawImage(CMUImage(Image.fromarray(image)), 0, 0)
-        app.handDetector.drawDots(image)
+        app.handDetector.drawDots(image,app)
     for bomb in app.bombs:
         drawCircle(bomb.cx, bomb.cy, bomb.r, fill=bomb.color)
 
 
-#def onStep(app):
-def handModeOnStep(app):
+def onStep(app):
     app.handDetector = handDetector(4, 0.3, 0.3)
     app.headDetector = headDetector(0.3)
-    status, app.frame = app.vid.read()
+    _, app.frame = app.vid.read()
     app.hasFrame = True
     if app.noses!=[]:
         app.bombs.append(SmartBomb(app,app.noses[0][0],app.noses[0][1]))
