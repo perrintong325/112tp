@@ -2,6 +2,7 @@ from cmu_cs3_graphics import *
 import random
 from boids import boids
 import math
+import cmath
 import sympy
 
 x, y = 1920, 1080
@@ -12,8 +13,8 @@ class Fruit(object):
         self.name = name
         self.cx = random.randrange(0, x)
         self.cy = y
-        self.xVelocity = random.randrange(-15, 15)
-        self.yVelocity = random.randint(-y//30, -y//45)
+        self.xVelocity = random.randrange(-20, 20)
+        self.yVelocity = random.randint(-y//25, -y//35)
         self.xAcceleration = 1
         self.yAcceleration = 1
         # self.r = random.randrange(5,15)
@@ -85,21 +86,25 @@ def cordCalc(p1, p2, cx, cy,r):
     if p2[0] != p1[0]:
         gradient = (p2[1]-p1[1])/(p2[0]-p1[0])
         c = p1[1] - gradient*p1[0]
-        # x = (math.sqrt(((gradient**2)+1)*(r**2)-((cx**2)*(gradient**2))+(((2*cx*cy)-(2*cx*c))*gradient)-(c**2)+(2*cy*c)-(cy**2))+((c-cy)*gradient)-cx)/((gradient**2)+1)
-        #y = gradient*x + c
-        #return (x,y)
-        x,y = sympy.symbols('x,y')
-        eq1 = sympy.Eq((x-cx)**2+(y-cy)**2,r**2)
-        eq2 = sympy.Eq(gradient*x+c,y)
-        result = sympy.solve([eq1,eq2],(x,y))
-        print(result)
-        newResult = []
-        for x in result:
-            newResult.append([abs(x[0]),abs(x[1])])
-        return (abs(result[0][0]),abs(result[0][1]))
-    else:
-        y = cy - math.sqrt(((-(p1[0]))**2)+(2*cx*p1[0])+(r**2)-(cx**2))
-        return (p1[0],y)
+        result = []
+        x = (cmath.sqrt(((gradient**2)+1)*(r**2)-((cx**2)*(gradient**2))+(((2*cx*cy)-(2*cx*c))*gradient)-(c**2)+(2*cy*c)-(cy**2))+((c-cy)*gradient)+cx)/((gradient**2)+1)
+        y = gradient*x + c
+        result.append((abs(x),abs(y)))
+        x = -(cmath.sqrt(((gradient**2)+1)*(r**2)-((cx**2)*(gradient**2))+(((2*cx*cy)-(2*cx*c))*gradient)-(c**2)+(2*cy*c)-(cy**2))+((c-cy)*gradient)-cx)/((gradient**2)+1)
+        y = gradient*x + c
+        result.append((abs(x),abs(y)))
+        return result
+        # x,y = sympy.symbols('x,y')
+        # eq1 = sympy.Eq((x-cx)**2+(y-cy)**2,r**2)
+        # eq2 = sympy.Eq(gradient*x+c,y)
+        # result = sympy.solve([eq1,eq2],(x,y))
+    #     newResult = []
+    #     for x in result:
+    #         newResult.append([abs(x[0]),abs(x[1])])
+    #     return (abs(result[0][0]),abs(result[0][1]))
+    # else:
+    #     y = cy - math.sqrt(((-(p1[0]))**2)+(2*cx*p1[0])+(r**2)-(cx**2))
+    #     return (p1[0],y)
     # c = smallY - gradient*smallX
     # pointX,pointY = 0,0
     # while smallX <= largeX or smallY <= largeY:
@@ -134,11 +139,11 @@ def fruitMovementOnMouseMove(app,mouseX,mouseY):
                 fruit.cords.add((mouseX, mouseY))
             if fruit.exitCords != None and fruit.entryCords != None:
                 app.removeable.add(fruit)
-                fruit.entryPoint = cordCalc(fruit.entryCords[0], fruit.entryCords[1], fruit.cx+160, fruit.cy,fruit.r)
-                fruit.exitPoint = cordCalc(fruit.exitCords[0], fruit.exitCords[1], fruit.cx, fruit.cy,fruit.r)
-                # result = cordCalc(fruit.entryCords[0], fruit.entryCords[1], fruit.cx+160, fruit.cy+160,fruit.r)
-                # fruit.entryPoint = result[0]
-                # fruit.exitPoint = result[1]
+                # fruit.entryPoint = cordCalc(fruit.entryCords[0], fruit.entryCords[1], fruit.cx+160, fruit.cy,fruit.r)
+                # fruit.exitPoint = cordCalc(fruit.exitCords[0], fruit.exitCords[1], fruit.cx, fruit.cy,fruit.r)
+                result = cordCalc(fruit.entryCords[0], fruit.entryCords[1], fruit.cx+160, fruit.cy+160,fruit.r)
+                fruit.entryPoint = result[0]
+                fruit.exitPoint = result[1]
                 print("point:", fruit.entryPoint, fruit.exitPoint)
                 fruit.angle = angleCalc(fruit.entryPoint, fruit.exitPoint)
                 newCx = (fruit.entryPoint[0] + fruit.exitPoint[0])/2

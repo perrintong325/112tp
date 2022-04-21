@@ -104,36 +104,29 @@ class SmartBomb(Bomb):
         self.yVelocity = pathFinding(self.cx,self.cy,targetX,targetY,self.xVelocity,self.xAcceleration,self.yAcceleration)
         #self.yVelocity = pathFinding(self.cx,self.cy,app.width/2,app.height/2,self.xVelocity,self.xAcceleration,self.yAcceleration)
 
-def onAppStart(app):
+#def onAppStart(app):
+def handModeOnAppStart(app):
     app.vid = vid
     app.hasFrame = False
-    app.handMode = 1
     app.stepsPerSecond = 30
     app.bombs = []
     app.noses = list()
 
 
-def redrawAll(app):
+#def redrawAll(app):
+def handModeRedrawAll(app):
     if app.hasFrame:
         image = cv2.flip(cv2.cvtColor(app.frame, cv2.COLOR_BGR2RGB), 1)
         image = app.handDetector.findHands(image)
         image = app.headDetector.findHeads(image,app)
         drawImage(CMUImage(Image.fromarray(image)), 0, 0)
         app.handDetector.drawDots(image)
-    drawLabel(f"Hand Mode = {bool(app.handMode)}", 100, 100, size=30,
-              fill='lawnGreen', align='left')
-    drawCircle(app.width/2, app.height/2, 15, fill='green')
     for bomb in app.bombs:
         drawCircle(bomb.cx, bomb.cy, bomb.r, fill=bomb.color)
 
 
-def onKeyPress(app, key):
-    if key == 'space':
-        app.handMode -= 1
-        app.handMode = abs(app.handMode)
-
-
-def onStep(app):
+#def onStep(app):
+def handModeOnStep(app):
     app.handDetector = handDetector(4, 0.3, 0.3)
     app.headDetector = headDetector(0.3)
     status, app.frame = app.vid.read()

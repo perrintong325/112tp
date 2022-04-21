@@ -14,11 +14,11 @@ def openingScreenOnAppStart(app):
 
 # def onStep(app):
 def openingScreenOnStep(app):
-    if app.splashScreenLeave:
+    if app.splashScreenLeave!=False:
         app.normalModeX -= 50
         app.handModeX += 50
         if app.normalModeX <= 0 and app.handModeX >= app.width:
-            app.status = 'normal'
+            app.status = app.splashScreenLeave
             app.handModeX, app.handModeY = 5*app.width//8, 3*app.height//8
             app.normalModeX, app.normalModeY = app.width//8, 3*app.height//8
             app.splashScreenLeave = False
@@ -27,10 +27,10 @@ def openingScreenOnStep(app):
 def openingScreenOnMousePress(app,mouseX,mouseY):
     if (mouseX >= app.handModeX and mouseX <= app.handModeX + app.handModeImage.width and \
     mouseY >= app.handModeY and mouseY <= app.handModeY + app.handModeImage.height):
-        app.status = 'hand'
+        app.splashScreenLeave = 'hand'
     elif (mouseX >= app.normalModeX and mouseX <= app.normalModeX + app.normalModeImage.width and
     mouseY >= app.normalModeY and mouseY <= app.normalModeY + app.normalModeImage.height):
-        app.splashScreenLeave = True
+        app.splashScreenLeave = 'normal'
 
 # def redrawAll(app):
 def openingScreenRedrawAll(app):
