@@ -64,5 +64,6 @@ def redrawAll(app):
         drawImage(CMUImage(app.logo), 0, 0,width=1.6*(app.width/8),height=app.width/8)
         drawImage(CMUImage(app.backButtonImage), 0, app.height-app.backButtonImage.height-10)
         fruitMovement.redrawAll(app)
+        
 
 runApp(width=1280, height=720)

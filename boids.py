@@ -2,6 +2,9 @@ import math
 # from fruitMovement import distance
 
 #reference: stanford cs notes, cornell ece notes and vergnet boids seudocode
+#https://cs.stanford.edu/people/eroberts/courses/soco/projects/2008-09/modeling-natural-systems/boids.html
+#http://www.vergenet.net/~conrad/boids/pseudocode.html
+#http://people.ece.cornell.edu/land/courses/ece4760/labs/s2021/Boids/Boids.html
 maxSpeed = 40
 minSpeed = 5
 def boids(fruits,x,y):
@@ -22,7 +25,7 @@ def boids(fruits,x,y):
     bound(fruits,x,y)
     return fruits
 
-# reference: cs academy
+# reference: https://cs3.academy.cs.cmu.edu/collection/2274/0/exercise
 
 
 def distance(x1, y1, x2, y2):
