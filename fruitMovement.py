@@ -20,8 +20,8 @@ class Fruit(object):
         # self.r = random.randrange(5,15)
         # self.r = 20
         self.intersect = set()
-        self.entryCords = None
-        self.exitCords = None
+        self.entryCords = []
+        self.exitCords = []
         self.entryPoint = None
         self.exitPoint = None
         self.cords = set()
@@ -91,6 +91,7 @@ def onAppStart(app):
     app.points = 0
     app.frenzyCount = random.randrange(0, 30)
     app.boidsCount = 0
+    app.test = []
 
 # reference: cs academy
 
@@ -100,42 +101,46 @@ def distance(x1, y1, x2, y2):
 
 def cordCalc(p1, p2, cx, cy,r):
     if p2[0] != p1[0]:
-        gradient = (p2[1]-p1[1])/(p2[0]-p1[0])
-        c = p1[1] - gradient*p1[0]
+        cy = -cy
+        gradient = ((-p2[1])-(-p1[1]))/(p2[0]-p1[0])
+        c = (-p1[1]) - gradient*p1[0]
         result = []
-        x = (cmath.sqrt(((gradient**2)+1)*(r**2)-((cx**2)*(gradient**2))+(((2*cx*cy)-(2*cx*c))*gradient)-(c**2)+(2*cy*c)-(cy**2))+((c-cy)*gradient)+cx)/((gradient**2)+1)
-        y = gradient*x + c
-        result.append((abs(x),abs(y)))
-        x = -(cmath.sqrt(((gradient**2)+1)*(r**2)-((cx**2)*(gradient**2))+(((2*cx*cy)-(2*cx*c))*gradient)-(c**2)+(2*cy*c)-(cy**2))+((c-cy)*gradient)-cx)/((gradient**2)+1)
-        y = gradient*x + c
-        result.append((abs(x),abs(y)))
+        x = -(math.sqrt(((gradient**2)+1)*(r**2)-((cx**2)*(gradient**2))+(2*cx*cy-2*cx*c)*gradient-(cy**2)+(2*c*cy)-(c**2))+((c-cy)*gradient)-cx)/((gradient**2)+1)
+        y = gradient*x+c
+        result.append((x,-y))
+        x = (math.sqrt(((gradient**2)+1)*(r**2)-((cx**2)*(gradient**2))+(2*cx*cy-2*cx*c)*gradient-(cy**2)+(2*c*cy)-(c**2))+((cy-c)*gradient)+cx)/((gradient**2)+1)
+        y = gradient*x+c
+        result.append((x,-y))
         return result
-        # x,y = sympy.symbols('x,y')
-        # eq1 = sympy.Eq((x-cx)**2+(y-cy)**2,r**2)
-        # eq2 = sympy.Eq(gradient*x+c,y)
-        # result = sympy.solve([eq1,eq2],(x,y))
-    #     newResult = []
-    #     for x in result:
-    #         newResult.append([abs(x[0]),abs(x[1])])
-    #     return (abs(result[0][0]),abs(result[0][1]))
-    # else:
-    #     y = cy - math.sqrt(((-(p1[0]))**2)+(2*cx*p1[0])+(r**2)-(cx**2))
-    #     return (p1[0],y)
-    # c = smallY - gradient*smallX
-    # pointX,pointY = 0,0
-    # while smallX <= largeX or smallY <= largeY:
-    #     if distance(smallX, smallY, cx, cy) == r:
-    #         print(smallX, smallY)
-    #     else:
-    #         smallY = smallX*gradient + c
-    #         smallX += 1
     return p1
 
 def angleCalc(p1,p2):
-    return 90 -((math.atan2(p2[1]-p1[1], p2[0]-p1[0]))*360/(2*math.pi))
+    dx = p2[0]-p1[0]
+    dy = p1[1] - p2[1]
+    angle = math.atan(dx/dy)* 360/ (2*math.pi)
+    return angle
 
 def radiusCalc(newCx, newCy, cx, cy, r):
-    return r - distance(newCx, newCy, cx, cy)
+    p1 = (newCx,newCy)
+    p2 = (cx,cy)
+    if p2[0] != p1[0]:
+        cy = -cy
+        gradient = ((-p2[1])-(-p1[1]))/(p2[0]-p1[0])
+        c = (-p1[1]) - gradient*p1[0]
+        result = []
+        x = -(math.sqrt(((gradient**2)+1)*(r**2)-((cx**2)*(gradient**2))+(2*cx*\
+            cy-2*cx*c)*gradient-(cy**2)+(2*c*cy)-(c**2))+((c-cy)*gradient)-cx)/\
+                ((gradient**2)+1)
+        y = gradient*x+c
+        result.append((x,-y))
+        x = (math.sqrt(((gradient**2)+1)*(r**2)-((cx**2)*(gradient**2))+(2*cx*\
+        cy-2*cx*c)*gradient-(cy**2)+(2*c*cy)-(c**2))+((cy-c)*gradient)+cx)/\
+            ((gradient**2)+1)
+        y = gradient*x+c
+        result.append((x,-y))
+        minY = result[0][1] if result[0][1]<result[1][1] else result[1][1]
+        minX = result[0][0] if minY == result[0][1] else result[1][0]
+        return distance(minX,minY,newCx,newCy)
 
 def onMouseMove(app,mouseX,mouseY):
     app.handX = mouseX
@@ -146,19 +151,12 @@ def onMouseMove(app,mouseX,mouseY):
             if (distance(app.movement[l-1][0], app.movement[l-1][1], fruit.cx, fruit.cy) >= fruit.r and
                     distance(app.movement[l][0], app.movement[l][1], fruit.cx, fruit.cy) <= fruit.r):
                 fruit.entryCords = (app.movement[l-1], app.movement[l])
-            elif (distance(app.movement[l-1][0], app.movement[l-1][1], fruit.cx, fruit.cy) <= fruit.r and
-                    distance(app.movement[l][0], app.movement[l][1], fruit.cx, fruit.cy) >= fruit.r):
-                fruit.exitCords = (app.movement[l-1], app.movement[l])
-            elif fruit.entryCords != None and fruit.exitCords == None:
-                fruit.cords.add((mouseX, mouseY))
-            if fruit.exitCords != None and fruit.entryCords != None:
+            if fruit.entryCords != []:
                 app.removeable.add(fruit)
                 app.points += fruit.points
-                # fruit.entryPoint = cordCalc(fruit.entryCords[0], fruit.entryCords[1], fruit.cx+160, fruit.cy,fruit.r)
-                # fruit.exitPoint = cordCalc(fruit.exitCords[0], fruit.exitCords[1], fruit.cx, fruit.cy,fruit.r)
-                result = cordCalc(fruit.entryCords[0], fruit.entryCords[1], fruit.cx+160, fruit.cy+160,fruit.r)
-                fruit.entryPoint = result[1]
-                fruit.exitPoint = result[0]
+                result = cordCalc(fruit.entryCords[0], fruit.entryCords[1], fruit.cx, fruit.cy,fruit.r)
+                fruit.entryPoint = result[0]
+                fruit.exitPoint = result[1]
                 fruit.angle = angleCalc(fruit.entryPoint, fruit.exitPoint)
                 newCx = (fruit.entryPoint[0] + fruit.exitPoint[0])/2
                 newCy = (fruit.entryPoint[1] + fruit.exitPoint[1])/2
@@ -168,12 +166,11 @@ def onMouseMove(app,mouseX,mouseY):
                     fruit.xVelocity, fruit.yVelocity, fruit.xAcceleration,
                     fruit.yAcceleration,fruit.color))
                 app.slicedFruits.append(slicedFruit(fruit.entryPoint,
-                    fruit.exitPoint, newRadius, fruit.angle+180, newCx-5,
+                    fruit.exitPoint, (2*fruit.r)-newRadius, fruit.angle+180, newCx-5,
                     newCy,180, fruit.xVelocity, fruit.yVelocity,
                     fruit.xAcceleration,fruit.yAcceleration,fruit.color))
                 if type(fruit) == frenzy:
                     app.boids = abs(app.boids-1)
-                # print(fruit.entryPoint, fruit.exitPoint)
     for bomb in app.bombs:
         if distance(bomb.cx, bomb.cy, mouseX, mouseY) <= bomb.r:
             app.points -= bomb.points
@@ -181,11 +178,6 @@ def onMouseMove(app,mouseX,mouseY):
     for fruit in app.removeable:
         app.fruits.remove(fruit)
     app.removeable = set()
-
-def onKeyPress(app,key):
-    if key == 'space':
-        app.boids = abs(app.boids-1)
-
 
 def onStep(app):
     app.count += 1
@@ -198,7 +190,6 @@ def onStep(app):
         if bool(app.boids) == False:
             app.fruits.append(frenzy('n',app))
         app.frenzyCount = random.randrange(app.count,app.count+30)
-    print(app.count, app.frenzyCount)
     if bool(app.boids):
         if app.boidsCount >=200:
             app.boidsCount = 0
@@ -244,9 +235,9 @@ def onStep(app):
 def redrawAll(app):
     for fruit in app.fruits:
         drawCircle(fruit.cx, fruit.cy, fruit.r, fill=fruit.color)
-        # drawLabel(fruit.name, fruit.cx, fruit.cy)
     for fruit in app.slicedFruits:
         drawArc(int(fruit.cx), int(fruit.cy), int(fruit.width),int(fruit.height), fruit.angle,fruit.sweepAngle, fill=fruit.color)
+        
     for bomb in app.bombs:
         drawCircle(bomb.cx, bomb.cy, bomb.r, fill=bomb.color)
     if app.status == 'normal':
@@ -256,7 +247,6 @@ def redrawAll(app):
     if bool(app.boids):
         drawLabel('FRENZY!', app.width//2, 100,size = 100,fill='yellow',align='center')
     drawLabel('Points: '+str(app.points), app.width-100, 30,size=app.height/20,fill = 'purple')
-        
-
+    
 if __name__ == '__main__':
     runApp(width=1280, height=720)
