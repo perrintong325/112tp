@@ -21,8 +21,9 @@ def onAppStart(app):
     fruitMovement.onAppStart(app)
     handMode.onAppStart(app)
     app.backButtonImage = Image.open('Resources/backButton.png')
-    app.backButtonImage = app.backButtonImage.resize((app.width//10,app.width//10))
-    app.stepsPerSecond = 60
+    app.backButtonWidth, app.backButtonHeight = app.backButtonImage.width, app.backButtonImage.height
+    app.backButtonImage = CMUImage(app.backButtonImage.resize((app.width//10,app.width//10)))
+    app.stepsPerSecond = 30
 
 def onStep(app):
     if app.status == 'splashScreen':
@@ -37,15 +38,12 @@ def onMousePress(app,mouseX,mouseY):
     if app.status == 'splashScreen':
         openingScreen.onMousePress(app,mouseX,mouseY)
     elif app.status == 'normal' or app.status == 'hand':
-        if mouseX >= 0 and mouseX <= app.backButtonImage.width and \
-        mouseY >= app.height-app.backButtonImage.height-10 and mouseY <= app.height-10:
+        if mouseX >= 0 and mouseX <= app.backButtonWidth and \
+        mouseY >= app.height-app.backButtonHeight-10 and mouseY <= app.height-10:
             app.status = 'splashScreen'
             app.splashScreenLeave = False
             fruitMovement.onAppStart(app)
             handMode.onAppStart(app)
-
-def onKeyPress(app, key):
-    fruitMovement.onKeyPress(app, key)
 
 def onMouseMove(app,mouseX,mouseY):
     if app.status == 'normal':
@@ -55,14 +53,14 @@ def redrawAll(app):
     if app.status == 'splashScreen':
         openingScreen.redrawAll(app)
     elif app.status == 'normal':
-        drawImage(CMUImage(app.backgroundImage), 0, 0)
-        drawImage(CMUImage(app.logo), 0, 0,width=1.6*(app.width/8),height=app.width/8)
+        drawImage(app.backgroundImage, 0, 0)
+        drawImage(app.logo, 0, 0,width=1.6*(app.width/8),height=app.width/8)
         fruitMovement.redrawAll(app)
-        drawImage(CMUImage(app.backButtonImage), 0, app.height-app.backButtonImage.height-10)
+        drawImage(app.backButtonImage, 0, app.height-app.backButtonHeight-10)
     elif app.status == 'hand':
         handMode.redrawAll(app)
-        drawImage(CMUImage(app.logo), 0, 0,width=1.6*(app.width/8),height=app.width/8)
-        drawImage(CMUImage(app.backButtonImage), 0, app.height-app.backButtonImage.height-10)
+        drawImage(app.logo, 0, 0,width=1.6*(app.width/8),height=app.width/8)
+        drawImage(app.backButtonImage, 0, app.height-app.backButtonHeight-10)
         fruitMovement.redrawAll(app)
         
 

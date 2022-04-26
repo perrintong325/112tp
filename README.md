@@ -3,4 +3,4 @@
 
 TP2
 
-Frenzy mode implemented, basic functions compelte with the exceptions of fruit slicing. Parameters(ie speed and frequency) are not final and for testing only.
+Start from main.py. Frenzy mode implemented, basic functions compelte with the exceptions of fruit slicing. Parameters(ie speed and frequency) are not final and for testing only.

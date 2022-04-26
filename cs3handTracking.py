@@ -136,7 +136,7 @@ def onStep(app):
     if app.count % 10 == 0:
         app.movement = []
         app.handPoints = []
-    app.handDetector = handDetector(4, 0.3, 0.3)
+    app.handDetector = handDetector(1, 0.3, 0.3)
     app.headDetector = headDetector(0.3)
     _, app.frame = app.vid.read()
     app.hasFrame = True
