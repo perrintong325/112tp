@@ -109,7 +109,6 @@ def cordCalc(p1, p2, cx, cy,r):
         x = (math.sqrt(((gradient**2)+1)*(r**2)-((cx**2)*(gradient**2))+(2*cx*cy-2*cx*c)*gradient-(cy**2)+(2*c*cy)-(c**2))+((cy-c)*gradient)+cx)/((gradient**2)+1)
         y = gradient*x+c
         result.append((x,-y))
-        # print('1',result,gradient,c,p1,p2,cx,cy,r)
         return result
     else:
         x = p1[0]
@@ -118,7 +117,6 @@ def cordCalc(p1, p2, cx, cy,r):
         result.append((x,-y))
         y = (math.sqrt((-x**2)+2*cx*x+(r**2)-(cx**2)))-cy
         result.append((x,-y))
-        # print('2',result,p1,p2,cx,cy,r)
         return result
 
 def angleCalc(p1,p2):
@@ -188,38 +186,59 @@ def slicing(app,mouseX,mouseY):
                 newCx = (fruit.entryPoint[0] + fruit.exitPoint[0])/2
                 newCy = (fruit.entryPoint[1] + fruit.exitPoint[1])/2
                 newRadius = radiusCalc(newCx, newCy, fruit.cx, fruit.cy, fruit.r)
-                slices = []
                 if newRadius < fruit.r:
                     width = abs(distance(fruit.entryPoint[0],fruit.entryPoint[1],fruit.exitPoint[0],fruit.exitPoint[1]))
                     topArc = slicedFruit(fruit.entryPoint,
                     fruit.exitPoint, newRadius*2,width, 270+fruit.angle, newCx-20, newCy-20,180,
                     fruit.xAcceleration,fruit.color,'arc')
-                    
-                    turnAngle = 90 +abs(angleCalc(fruit.exitPoint, (fruit.cx, fruit.cy)))
-                    sweep = 360-abs(angleCalc(fruit.entryPoint, (fruit.cx, fruit.cy)))-abs(angleCalc(fruit.exitPoint, (fruit.cx, fruit.cy)))
+
+                    sweep = 360-(math.acos(((2*(fruit.r**2))-(width**2))/(2*(fruit.r**2)))*(180/math.pi))
+                    turnAngle = fruit.angle-((180-(360-sweep))/2)
                     bottomArc = slicedFruit(fruit.entryPoint,
                     fruit.exitPoint, 2*fruit.r,2*fruit.r, turnAngle, fruit.cx+20, fruit.cy+20,sweep,
-                    fruit.xAcceleration,fruit.color,'arc')
+                    fruit.xAcceleration,fruit.color,'barc')
                     
                     triP1 = (fruit.entryPoint[0] + 20, fruit.entryPoint[1] + 20)
                     triP2 = (fruit.exitPoint[0] + 20, fruit.exitPoint[1] + 20)
                     triangle = slicedFruit(triP1,
-                    triP2, 2*fruit.r,2*fruit.r, 50+fruit.angle, fruit.cx+20, fruit.cy+20,sweep,
+                    triP2, 2*fruit.r,2*fruit.r, turnAngle, fruit.cx+20, fruit.cy+20,sweep,
                     fruit.xAcceleration,fruit.color,'tri')
 
                     app.slicedFruits.append(topArc)
                     app.slicedFruits.append(bottomArc)
                     app.slicedFruits.append(triangle)
+                elif newRadius > fruit.r:
+                    width = abs(distance(fruit.entryPoint[0],fruit.entryPoint[1],fruit.exitPoint[0],fruit.exitPoint[1]))
+                    bottomArc = slicedFruit(fruit.entryPoint,
+                    fruit.exitPoint, (2*fruit.r-newRadius)*2,width, 90+fruit.angle, newCx+20, newCy+20,180,
+                    fruit.xAcceleration,fruit.color,'arc')
+                    
+                    sweep = 360-(math.acos(((2*(fruit.r**2))-(width**2))/(2*(fruit.r**2)))*(180/math.pi))
+                    turnAngle = 180+fruit.angle-((180-(360-sweep))/2)
+                    topArc = slicedFruit(fruit.entryPoint,
+                    fruit.exitPoint, 2*fruit.r,2*fruit.r, turnAngle, fruit.cx-20, fruit.cy-20,sweep,
+                    fruit.xAcceleration,fruit.color,'barc')
+                    
+                    triP1 = (fruit.entryPoint[0] - 20, fruit.entryPoint[1] - 20)
+                    triP2 = (fruit.exitPoint[0] - 20, fruit.exitPoint[1] - 20)
+                    triangle = slicedFruit(triP1,
+                    triP2, 2*fruit.r,2*fruit.r, turnAngle, fruit.cx-20, fruit.cy-20,sweep,
+                    fruit.xAcceleration,fruit.color,'tri')
 
-                # else:
-                #     app.slicedFruits.append(slicedFruit(fruit.entryPoint,
-                #         fruit.exitPoint, newRadius, 270+fruit.angle, newCx-20, newCy-20,180,
-                #         fruit.xVelocity, fruit.yVelocity, fruit.xAcceleration,
-                #         fruit.yAcceleration,fruit.color))
-                #     app.slicedFruits.append(slicedFruit(fruit.entryPoint,
-                #         fruit.exitPoint, (2*fruit.r)-newRadius, 90+fruit.angle, newCx+20,
-                #         newCy+20,180, fruit.xVelocity, fruit.yVelocity,
-                #         fruit.xAcceleration,fruit.yAcceleration,fruit.color))
+                    app.slicedFruits.append(topArc)
+                    app.slicedFruits.append(bottomArc)
+                    app.slicedFruits.append(triangle)
+                else:
+                    bottomArc = slicedFruit(fruit.entryPoint,
+                    fruit.exitPoint, 2*fruit.r,width, 90+fruit.angle, newCx+20, newCy+20,180,
+                    fruit.xAcceleration,fruit.color,'arc')
+
+                    topArc = slicedFruit(fruit.entryPoint,
+                    fruit.exitPoint, 2*fruit.r,width, 270+fruit.angle, newCx-20, newCy-20,180,
+                    fruit.xAcceleration,fruit.color,'arc')
+                    print('noice')
+                    app.slicedFruits.append(topArc)
+                    app.slicedFruits.append(bottomArc)
                 if type(fruit) == frenzy:
                     app.boids = abs(app.boids-1)
     for bomb in app.bombs:
@@ -299,8 +318,11 @@ def redrawAll(app):
         # drawArc(fruit.cx, fruit.cy, fruit.width,fruit.height, 270,\
         #     fruit.sweepAngle, fill=fruit.color, rotateAngle = fruit.angle)
         if fruit.shape == 'arc':
-            drawArc(fruit.cx, fruit.cy, fruit.width,fruit.height, 270,\
+            drawArc(fruit.cx, fruit.cy, fruit.width,fruit.height, 270,
                 fruit.sweepAngle, fill=fruit.color, rotateAngle = fruit.angle)
+        elif fruit.shape == 'barc':
+            drawArc(fruit.cx, fruit.cy, fruit.width,fruit.height, fruit.angle,
+                fruit.sweepAngle, fill=fruit.color)
         elif fruit.shape == 'tri':
             drawPolygon(fruit.cx,fruit.cy,fruit.p1[0],fruit.p1[1],fruit.p2[0],fruit.p2[1],fill=fruit.color)
     for bomb in app.bombs:
