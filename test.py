@@ -26,7 +26,7 @@ def redrawAll(app):
     
     drawArc(app.cx+100, app.cy, app.Awidth,app.Aheight, 270,app.sweepAngle, fill=app.color)
     print(app.Aheight+(120-(app.Aheight/2))*2)
-    bottomSweep = 360-abs(angleCalc(app.p1, (app.cx, app.cy)))-abs(angleCalc(app.p2, (app.cx, app.cy)))
+    sweep = 360-abs(angleCalc(app.p1, (app.cx, app.cy)))-abs(angleCalc(app.p2, (app.cx, app.cy)))
     drawArc(app.cx, app.cy, 120,120, 270,bottomSweep, fill=app.color)
     drawPolygon(app.p1[0],app.p1[1],app.p2[0],app.p2[1],app.cx,app.cy, fill=app.color)
 runApp(width=1280, height=720)
