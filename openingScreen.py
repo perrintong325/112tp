@@ -1,10 +1,16 @@
 from cmu_cs3_graphics import *
 from PIL import Image
 
+#this file displays the opebing screen/menu of the game.
+
 def onAppStart(app):
+    #source: self screenshot from Fruit Ninja iPad game + Photoshop
     app.backgroundImage = CMUImage(Image.open('Resources/background.png'))
+    #source: https://logos.fandom.com/wiki/Fruit_Ninja + Photoshop
     app.logo = CMUImage(Image.open('Resources/FruitNinja.png'))
+    #source: Photoshop self made
     app.normalModeImage = Image.open('Resources/normalMode.png').convert('RGBA')
+    #source: Photoshop self made
     app.handModeImage = Image.open('Resources/handMode.png')
     app.handModeX, app.handModeY = 5*app.width//8, 3*app.height//8
     app.normalModeX, app.normalModeY = app.width//8, 3*app.height//8

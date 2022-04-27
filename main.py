@@ -6,6 +6,9 @@ import openingScreen
 import fruitMovement
 import cs3handTracking as handMode
 
+#this file controls the program and dictates what and when to call different functions.
+#this is also where the UI is drawn from.
+
 camNum = -1
 for cam in range(2):
     vid = cv2.VideoCapture(cam)
@@ -36,6 +39,8 @@ def onStep(app):
     elif app.status == 'hand':
         handMode.onStep(app)
         fruitMovement.onStep(app)
+        if len(app.fruits)> 10 and bool(app.boids) == False:
+            app.fruit = app.fruit[:10]
 
 
 def onMousePress(app, mouseX, mouseY):

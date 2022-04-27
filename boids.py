@@ -1,5 +1,5 @@
 import math
-# from fruitMovement import distance
+#this file is used to calculate the movement using boids algorithim when activated
 
 #reference: stanford cs notes, cornell ece notes and vergnet boids seudocode
 #https://cs.stanford.edu/people/eroberts/courses/soco/projects/2008-09/modeling-natural-systems/boids.html

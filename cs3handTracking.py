@@ -113,7 +113,6 @@ class SmartBomb(Bomb):
         self.yVelocity = pathFinding(
             self.cx, self.cy, targetX, targetY, self.xVelocity, self.xAcceleration, self.yAcceleration)
         self.color = 'green'
-        self.points = 50
 
 
 def onAppStart(app):
@@ -153,7 +152,7 @@ def onStep(app):
     app.hasFrame = True
     if app.noses != []:
         app.headDetector.boxLocation(app)
-        if app.count % 40 == 0 and app.gameOver == False:
+        if app.count % 50 == 0 and app.gameOver == False:
             app.smartBombs.append(
                 SmartBomb(app, app.noses[0][0], app.noses[0][1]))
         app.noses.pop(0)
@@ -166,7 +165,7 @@ def onStep(app):
     for bomb in app.smartBombs:
         if bomb.sliceable:
             if bomb.cy > app.headBoxYmin and bomb.cy < app.headBoxYmin+app.headBoxHeight and bomb.cx > app.headBoxXmin and bomb.cx < app.headBoxXmin+app.headBoxWidth:
-                app.points -= bomb.points
+                app.gameOver = True
                 bomb.points = 0
                 bomb.xVelocity = 0
                 bomb.yVelocity = -10
