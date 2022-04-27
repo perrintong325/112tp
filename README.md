@@ -25,6 +25,6 @@ How to play:
    
       In this mode, user will need to use their hand to slice the fruits.
       Same as normal mode, frenzy fruits(yellow dots) will activate frenzy.
-      Smart Bombs(green dots) will be thrown towards your face, you will have to avoid the bomb by moving your head around and make sure the bomb does not touch the rectangle around your face.
+      Smart Bombs(green dots) will be thrown towards your face, you will have to avoid the bomb by moving your head around and make sure the bomb does not touch the rectangle around your face or your hand.
            
   
